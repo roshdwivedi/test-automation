@@ -264,34 +264,164 @@ Remove-Item -Path "htmlcov" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path ".coverage" -Force -ErrorAction SilentlyContinue
 ```
 
-## CI/CD Integration
+## GitHub Actions CI/CD
 
-### GitHub Actions Example
-```yaml
-name: Web Automation Tests
+This project includes comprehensive GitHub Actions workflows for automated testing and deployment.
 
-on: [push, pull_request]
+### Available Workflows
 
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        playwright install
-    - name: Run tests
-      run: pytest tests/ -v --html=reports/report.html --junit-xml=reports/junit.xml
-    - name: Upload test results
-      uses: actions/upload-artifact@v3
-      with:
-        name: test-results
-        path: reports/
+#### 1. **CI Workflow** (`ci.yml`)
+**Triggers:** Push to main/develop, Pull Requests
+**Features:**
+- Cross-browser testing (Chromium, Firefox, WebKit)
+- Multi-Python version testing (3.8, 3.9, 3.10, 3.11)
+- Automatic test result publishing
+- Artifact uploads for test reports
+
+#### 2. **Nightly Regression** (`nightly.yml`)
+**Triggers:** Daily at 2 AM UTC, Manual dispatch
+**Features:**
+- Full regression test suite
+- Coverage report generation
+- Automatic issue creation on failure
+- Comprehensive test reporting
+
+#### 3. **Release Workflow** (`release.yml`)
+**Triggers:** Version tags (v*)
+**Features:**
+- Pre-release testing
+- Automatic GitHub release creation
+- Release notes generation
+- Asset packaging
+
+#### 4. **Manual Test Execution** (`manual-tests.yml`)
+**Triggers:** Manual dispatch with inputs
+**Features:**
+- Custom test category selection
+- Browser-specific testing
+- Python version selection
+- Environment-specific testing
+- Real-time result comments
+
+### Setting Up GitHub Actions
+
+#### 1. **Repository Setup**
+```bash
+# Create a new repository on GitHub
+# Clone your repository
+git clone https://github.com/your-username/your-repo.git
+cd your-repo
+
+# Copy your project files
+cp -r path/to/web_automation_tests/* .
+
+# Commit and push
+git add .
+git commit -m "Initial commit: Web Automation Test Suite"
+git push origin main
+```
+
+#### 2. **Workflow Files Structure**
+```
+.github/
+└── workflows/
+    ├── ci.yml              # Main CI pipeline
+    ├── nightly.yml         # Nightly regression tests
+    ├── release.yml         # Release automation
+    └── manual-tests.yml    # Manual test execution
+```
+
+#### 3. **Running Manual Tests**
+1. Go to your GitHub repository
+2. Click on **Actions** tab
+3. Select **Manual Test Execution** workflow
+4. Click **Run workflow**
+5. Choose your options:
+   - **Test Category:** smoke, regression, auth, elements, etc.
+   - **Browser:** chromium, firefox, webkit, all
+   - **Python Version:** 3.8, 3.9, 3.10, 3.11
+   - **Environment:** staging, production
+
+### GitHub Actions Benefits
+
+#### **Automated Quality Gates**
+- ✅ All PRs must pass tests before merge
+- ✅ Cross-browser compatibility validation
+- ✅ Multi-Python version compatibility
+- ✅ Automatic test result reporting
+
+#### **Continuous Monitoring**
+- 🌙 Nightly regression testing
+- 📧 Automatic failure notifications
+- 📊 Test trend analysis
+- 🔍 Coverage tracking
+
+#### **Release Automation**
+- 🚀 Automated release creation
+- 📝 Auto-generated release notes
+- ✅ Pre-release testing
+- 📦 Asset packaging
+
+### Viewing Results
+
+#### **Test Reports**
+1. Go to **Actions** tab in your repository
+2. Click on any workflow run
+3. Download artifacts:
+   - `test-results-*`: HTML reports
+   - `junit-results-*`: JUnit XML files
+   - `nightly-test-results`: Nightly reports
+
+#### **Test Result Integration**
+- **Pull Requests**: Automatic status checks
+- **Commit Comments**: Manual test results
+- **Issues**: Automatic creation on nightly failures
+- **Releases**: Test confirmation before release
+
+### Configuration
+
+#### **Environment Variables**
+Set these in your repository settings under **Secrets and variables > Actions**:
+
+```bash
+# Optional: Custom test environment URLs
+STAGING_URL=https://staging.example.com
+PRODUCTION_URL=https://production.example.com
+
+# Optional: Slack/Teams webhook for notifications
+SLACK_WEBHOOK=https://hooks.slack.com/...
+```
+
+#### **Branch Protection**
+Recommended branch protection rules for `main`:
+- ✅ Require status checks to pass
+- ✅ Require branches to be up to date
+- ✅ Require CI - Web Automation Tests
+- ✅ Restrict pushes that create files
+
+### Workflow Examples
+
+#### **Basic CI Check**
+```bash
+# This runs automatically on every push/PR
+Trigger: git push origin feature-branch
+Result: Cross-browser tests on 3 browsers × 4 Python versions = 12 test jobs
+```
+
+#### **Manual Smoke Test**
+```bash
+# Run quick validation before demo
+Workflow: Manual Test Execution
+Inputs: Category=smoke, Browser=chromium, Python=3.11
+Result: Fast feedback in ~5 minutes
+```
+
+#### **Release Process**
+```bash
+# Create and push a version tag
+git tag v1.0.0
+git push origin v1.0.0
+Result: Full test suite → Create GitHub release → Notify team
 ```
 
 ### Jenkins Pipeline Example

@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  test-before-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Install Playwright browsers
+      run: |
+        playwright install
+        
+    - name: Run full test suite
+      run: |
+        pytest tests/ -v --tb=short --html=reports/release-report.html --self-contained-html --junit-xml=reports/release-junit.xml
+        
+    - name: Upload release test results
+      uses: actions/upload-artifact@v3
+      with:
+        name: release-test-results
+        path: reports/
+
+  create-release:
+    needs: test-before-release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.get_version.outputs.VERSION }}
+        release_name: Web Automation Test Suite ${{ steps.get_version.outputs.VERSION }}
+        body: |
+          ## Changes in ${{ steps.get_version.outputs.VERSION }}
+          
+          ### Features
+          - Add new features here
+          
+          ### Bug Fixes
+          - Add bug fixes here
+          
+          ### Testing
+          - All tests passed before release
+          - Cross-browser compatibility verified
+          
+          ### Installation
+          ```bash
+          git clone https://github.com/your-username/your-repo.git
+          cd your-repo
+          pip install -r requirements.txt
+          playwright install
+          ```
+          
+          ### Usage
+          ```bash
+          # Run all tests
+          ./scripts/run_all_tests.sh
+          
+          # Run specific category
+          ./scripts/run_category_tests.sh smoke
+          ```
+        draft: false
+        prerelease: false

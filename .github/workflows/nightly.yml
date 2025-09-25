@@ -1,0 +1,79 @@
+name: Nightly Regression Tests
+
+on:
+  schedule:
+    # Run every night at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  regression-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Install all Playwright browsers
+      run: |
+        playwright install
+        
+    - name: Create reports directory
+      run: mkdir -p reports
+        
+    - name: Run full regression test suite
+      run: |
+        pytest tests/ -m regression -v --tb=short \
+          --html=reports/nightly-report.html \
+          --self-contained-html \
+          --junit-xml=reports/nightly-junit.xml \
+          --json-report --json-report-file=reports/nightly-report.json
+        
+    - name: Generate coverage report
+      run: |
+        pytest tests/ --cov=pages --cov-report=html:reports/coverage --cov-report=xml:reports/coverage.xml
+        
+    - name: Upload nightly test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: nightly-test-results
+        path: |
+          reports/
+          
+    - name: Send notification on failure
+      if: failure()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `Nightly Tests Failed - ${new Date().toISOString().split('T')[0]}`,
+            body: `🚨 **Nightly regression tests have failed!**
+            
+            **Workflow:** ${context.workflow}
+            **Run ID:** ${context.runId}
+            **Commit:** ${context.sha}
+            
+            Please check the [workflow run](${context.payload.repository.html_url}/actions/runs/${context.runId}) for details.`,
+            labels: ['bug', 'automated-test-failure']
+          })

@@ -1,0 +1,187 @@
+name: Manual Test Execution
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_category:
+        description: 'Test category to run'
+        required: true
+        default: 'smoke'
+        type: choice
+        options:
+          - smoke
+          - regression
+          - auth
+          - elements
+          - alerts
+          - forms
+          - slow
+          - all
+      browser:
+        description: 'Browser to test with'
+        required: true
+        default: 'chromium'
+        type: choice
+        options:
+          - chromium
+          - firefox
+          - webkit
+          - all
+      python_version:
+        description: 'Python version'
+        required: true
+        default: '3.11'
+        type: choice
+        options:
+          - '3.8'
+          - '3.9'
+          - '3.10'
+          - '3.11'
+      environment:
+        description: 'Test environment'
+        required: false
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  manual-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ inputs.python_version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python_version }}
+        
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Install Playwright browsers
+      run: |
+        if [ "${{ inputs.browser }}" == "all" ]; then
+          playwright install
+        else
+          playwright install ${{ inputs.browser }}
+        fi
+        
+    - name: Create reports directory
+      run: mkdir -p reports
+        
+    - name: Run tests - All categories, All browsers
+      if: inputs.test_category == 'all' && inputs.browser == 'all'
+      run: |
+        for browser in chromium firefox webkit; do
+          echo "Running all tests with $browser"
+          pytest tests/ -v --tb=short --browser=$browser \
+            --html=reports/manual-all-$browser-report.html \
+            --self-contained-html \
+            --junit-xml=reports/manual-all-$browser-junit.xml
+        done
+        
+    - name: Run tests - Specific category, All browsers
+      if: inputs.test_category != 'all' && inputs.browser == 'all'
+      run: |
+        for browser in chromium firefox webkit; do
+          echo "Running ${{ inputs.test_category }} tests with $browser"
+          if [ "${{ inputs.test_category }}" == "auth" ]; then
+            pytest tests/test_authentication.py -v --tb=short --browser=$browser
+          elif [ "${{ inputs.test_category }}" == "elements" ]; then
+            pytest tests/test_elements.py -v --tb=short --browser=$browser
+          elif [ "${{ inputs.test_category }}" == "alerts" ]; then
+            pytest tests/test_alerts.py -v --tb=short --browser=$browser
+          elif [ "${{ inputs.test_category }}" == "forms" ]; then
+            pytest tests/test_file_upload.py -v --tb=short --browser=$browser
+          else
+            pytest tests/ -m ${{ inputs.test_category }} -v --tb=short --browser=$browser
+          fi
+        done
+        
+    - name: Run tests - All categories, Specific browser
+      if: inputs.test_category == 'all' && inputs.browser != 'all'
+      run: |
+        echo "Running all tests with ${{ inputs.browser }}"
+        pytest tests/ -v --tb=short --browser=${{ inputs.browser }} \
+          --html=reports/manual-all-${{ inputs.browser }}-report.html \
+          --self-contained-html \
+          --junit-xml=reports/manual-all-${{ inputs.browser }}-junit.xml
+          
+    - name: Run tests - Specific category, Specific browser
+      if: inputs.test_category != 'all' && inputs.browser != 'all'
+      run: |
+        echo "Running ${{ inputs.test_category }} tests with ${{ inputs.browser }}"
+        if [ "${{ inputs.test_category }}" == "auth" ]; then
+          pytest tests/test_authentication.py -v --tb=short --browser=${{ inputs.browser }} \
+            --html=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-report.html \
+            --self-contained-html \
+            --junit-xml=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-junit.xml
+        elif [ "${{ inputs.test_category }}" == "elements" ]; then
+          pytest tests/test_elements.py -v --tb=short --browser=${{ inputs.browser }} \
+            --html=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-report.html \
+            --self-contained-html \
+            --junit-xml=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-junit.xml
+        elif [ "${{ inputs.test_category }}" == "alerts" ]; then
+          pytest tests/test_alerts.py -v --tb=short --browser=${{ inputs.browser }} \
+            --html=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-report.html \
+            --self-contained-html \
+            --junit-xml=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-junit.xml
+        elif [ "${{ inputs.test_category }}" == "forms" ]; then
+          pytest tests/test_file_upload.py -v --tb=short --browser=${{ inputs.browser }} \
+            --html=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-report.html \
+            --self-contained-html \
+            --junit-xml=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-junit.xml
+        else
+          pytest tests/ -m ${{ inputs.test_category }} -v --tb=short --browser=${{ inputs.browser }} \
+            --html=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-report.html \
+            --self-contained-html \
+            --junit-xml=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-junit.xml
+        fi
+        
+    - name: Upload manual test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: manual-test-results-${{ inputs.test_category }}-${{ inputs.browser }}-py${{ inputs.python_version }}
+        path: |
+          reports/
+          
+    - name: Comment on commit with results
+      if: always()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          let status = '${{ job.status }}' === 'success' ? '✅ PASSED' : '❌ FAILED';
+          let emoji = '${{ job.status }}' === 'success' ? '🎉' : '💥';
+          
+          github.rest.repos.createCommitComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            commit_sha: context.sha,
+            body: `${emoji} **Manual Test Execution Results**
+            
+            **Status:** ${status}
+            **Category:** ${{ inputs.test_category }}
+            **Browser:** ${{ inputs.browser }}
+            **Python:** ${{ inputs.python_version }}
+            **Environment:** ${{ inputs.environment }}
+            
+            **Workflow Run:** [View Details](${context.payload.repository.html_url}/actions/runs/${context.runId})`
+          })
