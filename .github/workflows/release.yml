@@ -71,7 +71,7 @@ jobs:
           
           ### Installation
           ```bash
-          git clone https://github.com/your-username/your-repo.git
+          git clone https://github.com/roshdwivedi/test-automation
           cd your-repo
           pip install -r requirements.txt
           playwright install
