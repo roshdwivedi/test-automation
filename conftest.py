@@ -4,6 +4,7 @@ Global pytest configuration and fixtures for Web Automation Test Suite.
 
 import pytest
 import asyncio
+import argparse
 from playwright.async_api import async_playwright, Browser, BrowserContext, Page
 
 
@@ -12,8 +13,9 @@ from playwright.async_api import async_playwright, Browser, BrowserContext, Page
 
 def pytest_addoption(parser):
     """Add command line options for browser selection."""
+    # Use a custom option name to avoid conflicts with pytest-playwright
     parser.addoption(
-        "--browser",
+        "--browser-type",
         action="store",
         default="chromium",
         help="Browser to run tests with: chromium, firefox, webkit",
@@ -32,7 +34,8 @@ async def browser(request):
     Returns:
         Browser: Playwright browser instance
     """
-    browser_name = request.config.getoption("--browser")
+    # Get browser type from our custom option
+    browser_name = request.config.getoption("--browser-type")
     
     async with async_playwright() as playwright:
         # Select browser based on command line option
