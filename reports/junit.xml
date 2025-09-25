@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="8" skipped="0" tests="42" time="357.032" timestamp="2025-09-25T11:29:33.316201" hostname="Rosh"><testcase classname="tests.test_alerts.TestJavaScriptAlerts" name="test_simple_alert" time="7.127" /><testcase classname="tests.test_alerts.TestJavaScriptAlerts" name="test_confirm_accept" time="4.311" /><testcase classname="tests.test_alerts.TestJavaScriptAlerts" name="test_confirm_dismiss" time="4.365" /><testcase classname="tests.test_alerts.TestJavaScriptAlerts" name="test_prompt_with_text" time="4.285" /><testcase classname="tests.test_alerts.TestJavaScriptAlerts" name="test_prompt_with_empty_text" time="4.332" /><testcase classname="tests.test_alerts.TestJavaScriptAlerts" name="test_prompt_dismiss" time="5.032" /><testcase classname="tests.test_alerts.TestJavaScriptAlerts" name="test_multiple_alerts_sequence" time="6.646"><failure message="AssertionError: Expected 'You entered: Test Input', got: You entered: &#10;assert 'You entered: Test Input' in 'You entered: '">tests\test_alerts.py:185: in test_multiple_alerts_sequence
+    assert expected_result in result, f"Expected '{expected_result}', got: {result}"
+E   AssertionError: Expected 'You entered: Test Input', got: You entered: 
+E   assert 'You entered: Test Input' in 'You entered: '</failure></testcase><testcase classname="tests.test_alerts.TestJavaScriptAlerts" name="test_dialog_properties" time="33.278"><failure message="playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.">tests\test_alerts.py:208: in test_dialog_properties
+    await alerts_page.trigger_alert()
+pages\alerts_page.py:58: in trigger_alert
+    await self.click_element(self.ALERT_BUTTON)
+pages\base_page.py:60: in click_element
+    await self.page.click(selector)
+venv\lib\site-packages\playwright\async_api\_generated.py:10117: in click
+    await self._impl_obj.click(
+venv\lib\site-packages\playwright\_impl\_page.py:694: in click
+    return await self._main_frame.click(**locals_to_params(locals()))
+venv\lib\site-packages\playwright\_impl\_frame.py:484: in click
+    await self._channel.send("click", locals_to_params(locals()))
+venv\lib\site-packages\playwright\_impl\_connection.py:62: in send
+    return await self._connection.wrap_api_call(
+venv\lib\site-packages\playwright\_impl\_connection.py:492: in wrap_api_call
+    return await cb()
+venv\lib\site-packages\playwright\_impl\_connection.py:100: in inner_send
+    result = next(iter(done)).result()
+E   playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.</failure></testcase><testcase classname="tests.test_alerts.TestJavaScriptAlerts" name="test_alert_buttons_present" time="3.867"><failure message="AssertionError: Result text area should be visible&#10;assert False">tests\test_alerts.py:256: in test_alert_buttons_present
+    assert result_visible, "Result text area should be visible"
+E   AssertionError: Result text area should be visible
+E   assert False</failure></testcase><testcase classname="tests.test_alerts.TestJavaScriptAlerts" name="test_prompt_with_special_characters" time="5.192" /><testcase classname="tests.test_authentication.TestAuthentication" name="test_valid_login" time="5.213" /><testcase classname="tests.test_authentication.TestAuthentication" name="test_invalid_login" time="34.101"><failure message="playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.">tests\test_authentication.py:52: in test_invalid_login
+    await login_page.login_with_invalid_credentials()
+pages\login_page.py:53: in login_with_invalid_credentials
+    await self.login("invaliduser", "invalidpassword")
+pages\login_page.py:45: in login
+    await self.click_element(self.LOGIN_BUTTON)
+pages\base_page.py:60: in click_element
+    await self.page.click(selector)
+venv\lib\site-packages\playwright\async_api\_generated.py:10117: in click
+    await self._impl_obj.click(
+venv\lib\site-packages\playwright\_impl\_page.py:694: in click
+    return await self._main_frame.click(**locals_to_params(locals()))
+venv\lib\site-packages\playwright\_impl\_frame.py:484: in click
+    await self._channel.send("click", locals_to_params(locals()))
+venv\lib\site-packages\playwright\_impl\_connection.py:62: in send
+    return await self._connection.wrap_api_call(
+venv\lib\site-packages\playwright\_impl\_connection.py:492: in wrap_api_call
+    return await cb()
+venv\lib\site-packages\playwright\_impl\_connection.py:100: in inner_send
+    result = next(iter(done)).result()
+E   playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.</failure></testcase><testcase classname="tests.test_authentication.TestAuthentication" name="test_empty_credentials" time="4.225" /><testcase classname="tests.test_authentication.TestAuthentication" name="test_empty_username" time="3.991" /><testcase classname="tests.test_authentication.TestAuthentication" name="test_empty_password" time="4.188" /><testcase classname="tests.test_authentication.TestAuthentication" name="test_logout_functionality" time="5.663" /><testcase classname="tests.test_authentication.TestAuthentication" name="test_case_sensitive_username" time="4.100" /><testcase classname="tests.test_authentication.TestAuthentication" name="test_case_sensitive_password" time="4.226" /><testcase classname="tests.test_elements.TestAddRemoveElements" name="test_add_single_element" time="3.428" /><testcase classname="tests.test_elements.TestAddRemoveElements" name="test_add_multiple_elements" time="5.777" /><testcase classname="tests.test_elements.TestAddRemoveElements" name="test_remove_single_element" time="4.498" /><testcase classname="tests.test_elements.TestAddRemoveElements" name="test_remove_all_elements" time="4.861" /><testcase classname="tests.test_elements.TestAddRemoveElements" name="test_add_and_remove_sequence" time="6.129" /><testcase classname="tests.test_elements.TestCheckboxes" name="test_checkbox_initial_states" time="2.848" /><testcase classname="tests.test_elements.TestCheckboxes" name="test_click_unchecked_checkbox" time="2.918" /><testcase classname="tests.test_elements.TestCheckboxes" name="test_click_checked_checkbox" time="2.868" /><testcase classname="tests.test_elements.TestCheckboxes" name="test_check_checkbox_method" time="3.085" /><testcase classname="tests.test_elements.TestCheckboxes" name="test_uncheck_checkbox_method" time="2.959" /><testcase classname="tests.test_elements.TestCheckboxes" name="test_toggle_all_checkboxes" time="3.227" /><testcase classname="tests.test_elements.TestDropdown" name="test_dropdown_initial_state" time="2.789" /><testcase classname="tests.test_elements.TestDropdown" name="test_select_by_value" time="32.848"><failure message="playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.">tests\test_elements.py:231: in test_select_by_value
+    selected_text = await dropdown_page.get_selected_option_text()
+pages\elements_page.py:213: in get_selected_option_text
+    return await self.get_text(self.SELECTED_OPTION)
+pages\base_page.py:82: in get_text
+    element = await self.wait_for_element(selector)
+pages\base_page.py:51: in wait_for_element
+    return await self.page.wait_for_selector(selector, timeout=timeout)
+venv\lib\site-packages\playwright\async_api\_generated.py:8314: in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+venv\lib\site-packages\playwright\_impl\_page.py:348: in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+venv\lib\site-packages\playwright\_impl\_frame.py:317: in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+venv\lib\site-packages\playwright\_impl\_connection.py:62: in send
+    return await self._connection.wrap_api_call(
+venv\lib\site-packages\playwright\_impl\_connection.py:492: in wrap_api_call
+    return await cb()
+venv\lib\site-packages\playwright\_impl\_connection.py:100: in inner_send
+    result = next(iter(done)).result()
+E   playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.</failure></testcase><testcase classname="tests.test_elements.TestDropdown" name="test_select_by_text" time="32.909"><failure message="playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.">tests\test_elements.py:248: in test_select_by_text
+    selected_text = await dropdown_page.get_selected_option_text()
+pages\elements_page.py:213: in get_selected_option_text
+    return await self.get_text(self.SELECTED_OPTION)
+pages\base_page.py:82: in get_text
+    element = await self.wait_for_element(selector)
+pages\base_page.py:51: in wait_for_element
+    return await self.page.wait_for_selector(selector, timeout=timeout)
+venv\lib\site-packages\playwright\async_api\_generated.py:8314: in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+venv\lib\site-packages\playwright\_impl\_page.py:348: in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+venv\lib\site-packages\playwright\_impl\_frame.py:317: in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+venv\lib\site-packages\playwright\_impl\_connection.py:62: in send
+    return await self._connection.wrap_api_call(
+venv\lib\site-packages\playwright\_impl\_connection.py:492: in wrap_api_call
+    return await cb()
+venv\lib\site-packages\playwright\_impl\_connection.py:100: in inner_send
+    result = next(iter(done)).result()
+E   playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.</failure></testcase><testcase classname="tests.test_elements.TestDropdown" name="test_select_by_index" time="34.033"><failure message="playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.">tests\test_elements.py:264: in test_select_by_index
+    selected_text = await dropdown_page.get_selected_option_text()
+pages\elements_page.py:213: in get_selected_option_text
+    return await self.get_text(self.SELECTED_OPTION)
+pages\base_page.py:82: in get_text
+    element = await self.wait_for_element(selector)
+pages\base_page.py:51: in wait_for_element
+    return await self.page.wait_for_selector(selector, timeout=timeout)
+venv\lib\site-packages\playwright\async_api\_generated.py:8314: in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+venv\lib\site-packages\playwright\_impl\_page.py:348: in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+venv\lib\site-packages\playwright\_impl\_frame.py:317: in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+venv\lib\site-packages\playwright\_impl\_connection.py:62: in send
+    return await self._connection.wrap_api_call(
+venv\lib\site-packages\playwright\_impl\_connection.py:492: in wrap_api_call
+    return await cb()
+venv\lib\site-packages\playwright\_impl\_connection.py:100: in inner_send
+    result = next(iter(done)).result()
+E   playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.</failure></testcase><testcase classname="tests.test_elements.TestDropdown" name="test_get_all_options" time="3.632" /><testcase classname="tests.test_elements.TestDropdown" name="test_multiple_selections" time="33.505"><failure message="playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.">tests\test_elements.py:299: in test_multiple_selections
+    selected_text = await dropdown_page.get_selected_option_text()
+pages\elements_page.py:213: in get_selected_option_text
+    return await self.get_text(self.SELECTED_OPTION)
+pages\base_page.py:82: in get_text
+    element = await self.wait_for_element(selector)
+pages\base_page.py:51: in wait_for_element
+    return await self.page.wait_for_selector(selector, timeout=timeout)
+venv\lib\site-packages\playwright\async_api\_generated.py:8314: in wait_for_selector
+    await self._impl_obj.wait_for_selector(
+venv\lib\site-packages\playwright\_impl\_page.py:348: in wait_for_selector
+    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))
+venv\lib\site-packages\playwright\_impl\_frame.py:317: in wait_for_selector
+    await self._channel.send("waitForSelector", locals_to_params(locals()))
+venv\lib\site-packages\playwright\_impl\_connection.py:62: in send
+    return await self._connection.wrap_api_call(
+venv\lib\site-packages\playwright\_impl\_connection.py:492: in wrap_api_call
+    return await cb()
+venv\lib\site-packages\playwright\_impl\_connection.py:100: in inner_send
+    result = next(iter(done)).result()
+E   playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded.</failure></testcase><testcase classname="tests.test_file_upload.TestFileUpload" name="test_upload_text_file" time="3.885" /><testcase classname="tests.test_file_upload.TestFileUpload" name="test_upload_custom_filename" time="3.949" /><testcase classname="tests.test_file_upload.TestFileUpload" name="test_upload_different_file_types" time="5.369" /><testcase classname="tests.test_file_upload.TestFileUpload" name="test_upload_large_file" time="3.935" /><testcase classname="tests.test_file_upload.TestFileUpload" name="test_select_file_without_uploading" time="3.956" /><testcase classname="tests.test_file_upload.TestFileUpload" name="test_upload_empty_file" time="4.132" /><testcase classname="tests.test_file_upload.TestFileUpload" name="test_file_upload_form_elements" time="3.486" /></testsuite></testsuites>
