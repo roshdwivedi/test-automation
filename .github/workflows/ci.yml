@@ -72,13 +72,31 @@ jobs:
     runs-on: ubuntu-22.04
     needs: test
     if: always()
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
     
     steps:
     - name: Download all artifacts
       uses: actions/download-artifact@v4
       
-    - name: Publish Test Results
+    # Non-fork contexts (pushes, PRs from same repo): create a Check Run
+    - name: Publish Test Results (check run)
+    
+      if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false)
       uses: EnricoMi/publish-unit-test-result-action@v2
-      if: always()
       with:
         files: "**/junit.xml"
+        check_run: true
+        job_summary: true
+    
+    # Forked PRs: cannot create Check Runs, publish to job summary only
+    - name: Publish Test Results (summary only on forks)
+      if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == true
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      with:
+        files: "**/junit.xml"
+        check_run: false
+        comment_mode: off
+        job_summary: true
