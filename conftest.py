@@ -10,19 +10,48 @@ from playwright.async_api import async_playwright, Browser, BrowserContext, Page
 # Remove custom event_loop fixture to use pytest-asyncio default
 
 
+def pytest_addoption(parser):
+    """Add command line options for browser selection."""
+    parser.addoption(
+        "--browser",
+        action="store",
+        default="chromium",
+        help="Browser to run tests with: chromium, firefox, webkit",
+        choices=["chromium", "firefox", "webkit"]
+    )
+
+
 @pytest.fixture(scope="function")
-async def browser():
+async def browser(request):
     """
     Function-scoped fixture to create and manage the browser instance.
     
+    Args:
+        request: Pytest request object to access command line options
+        
     Returns:
         Browser: Playwright browser instance
     """
+    browser_name = request.config.getoption("--browser")
+    
     async with async_playwright() as playwright:
-        browser = await playwright.chromium.launch(
-            headless=True,   # Headless mode - no browser window
-            slow_mo=0,       # No delay needed in headless mode
-        )
+        # Select browser based on command line option
+        if browser_name == "firefox":
+            browser = await playwright.firefox.launch(
+                headless=True,
+                slow_mo=0,
+            )
+        elif browser_name == "webkit":
+            browser = await playwright.webkit.launch(
+                headless=True,
+                slow_mo=0,
+            )
+        else:  # default to chromium
+            browser = await playwright.chromium.launch(
+                headless=True,
+                slow_mo=0,
+            )
+            
         yield browser
         await browser.close()
 
