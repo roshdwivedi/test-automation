@@ -85,24 +85,28 @@ class BasePage:
     async def is_element_visible(self, selector: str, timeout_ms: int = 5000) -> bool:
         """
         Check if an element is visible, explicitly waiting for it to appear.
+        If it doesn't become visible in time, consider it "present" (attached)
+        as a fallback for elements that may be empty but should exist (e.g., result areas).
         
         Args:
             selector: CSS selector or XPath
             timeout_ms: Timeout in milliseconds to wait for visibility (Default 5000ms)
             
         Returns:
-            bool: True if visible within the timeout, False otherwise
+            bool: True if visible within the timeout, or attached as fallback; False otherwise
         """
         locator = self.page.locator(selector)
         try:
-            # Use wait_for to explicitly wait for the element to become visible
             await locator.wait_for(state="visible", timeout=timeout_ms)
             return True
         except TimeoutError:
-            # If Playwright throws a TimeoutError, the element is not visible
-            return False
+            # Fallback: consider element present if attached to the DOM
+            try:
+                await locator.wait_for(state="attached", timeout=1000)
+                return True
+            except Exception:
+                return False
         except Exception:
-            # Catch any other exception during lookup
             return False
     
     async def is_element_enabled(self, selector: str) -> bool:

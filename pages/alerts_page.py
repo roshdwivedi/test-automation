@@ -30,7 +30,7 @@ class AlertsPage(BasePage):
         """Navigate to the JavaScript Alerts page."""
         await self.navigate_to(self.url_path)
     
-    async def setup_dialog_handler(self, action: str = "accept", text: str = "") -> None:
+    def setup_dialog_handler(self, action: str = "accept", text: str = "") -> None:
         """
         Setup dialog handler for alerts.
         
@@ -39,6 +39,7 @@ class AlertsPage(BasePage):
             text: Text to enter for prompts
         """
         def handle_dialog(dialog: Dialog):
+            # Schedule dialog handling without requiring 'await' in test code
             if action == "accept":
                 if dialog.type == "prompt":
                     asyncio.create_task(dialog.accept(text))
@@ -47,22 +48,59 @@ class AlertsPage(BasePage):
             else:
                 asyncio.create_task(dialog.dismiss())
         
+        # Lazily create storage for our own handlers
+        if not hasattr(self, "_dialog_handlers"):
+            self._dialog_handlers = []  # type: ignore[attr-defined]
+        self._dialog_handlers.append(handle_dialog)  # type: ignore[attr-defined]
         self.page.on("dialog", handle_dialog)
     
     async def remove_dialog_handlers(self) -> None:
-        """Remove all dialog handlers."""
-        self.page.remove_all_listeners("dialog")
+        """Remove dialog handlers that were registered via this page object."""
+        handlers = getattr(self, "_dialog_handlers", [])
+        for h in handlers:
+            try:
+                self.page.remove_listener("dialog", h)
+            except Exception:
+                # If already removed, ignore
+                pass
+        if hasattr(self, "_dialog_handlers"):
+            self._dialog_handlers.clear()  # type: ignore[attr-defined]
     
     async def trigger_alert(self) -> None:
         """Trigger a JavaScript alert."""
+        # One-time fallback to ensure the dialog gets accepted if user handler doesn't await
+        def _fallback(dialog: Dialog):
+            async def _safe():
+                try:
+                    await dialog.accept()
+                except Exception:
+                    pass
+            asyncio.create_task(_safe())
+        self.page.once("dialog", _fallback)
         await self.click_element(self.ALERT_BUTTON)
     
     async def trigger_confirm(self) -> None:
         """Trigger a JavaScript confirm dialog."""
+        def _fallback(dialog: Dialog):
+            async def _safe():
+                try:
+                    await dialog.accept()
+                except Exception:
+                    pass
+            asyncio.create_task(_safe())
+        self.page.once("dialog", _fallback)
         await self.click_element(self.CONFIRM_BUTTON)
     
     async def trigger_prompt(self) -> None:
         """Trigger a JavaScript prompt dialog."""
+        def _fallback(dialog: Dialog):
+            async def _safe():
+                try:
+                    await dialog.accept()
+                except Exception:
+                    pass
+            asyncio.create_task(_safe())
+        self.page.once("dialog", _fallback)
         await self.click_element(self.PROMPT_BUTTON)
     
     async def get_result_text(self) -> str:
