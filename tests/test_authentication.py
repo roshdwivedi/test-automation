@@ -6,7 +6,7 @@ This module contains tests for login/logout functionality.
 
 import pytest
 from playwright.async_api import Page
-from ..pages.login_page import LoginPage
+from pages.login_page import LoginPage
 
 
 @pytest.mark.asyncio

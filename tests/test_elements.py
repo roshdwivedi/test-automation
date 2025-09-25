@@ -6,7 +6,7 @@ This module contains tests for dynamic elements, checkboxes, and dropdowns.
 
 import pytest
 from playwright.async_api import Page
-from ..pages.elements_page import AddRemoveElementsPage, CheckboxPage, DropdownPage
+from pages.elements_page import AddRemoveElementsPage, CheckboxPage, DropdownPage
 
 
 @pytest.mark.asyncio

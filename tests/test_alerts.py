@@ -6,7 +6,7 @@ This module contains tests for JavaScript alerts, confirm, and prompt dialogs.
 
 import pytest
 from playwright.async_api import Page, Dialog
-from ..pages.alerts_page import AlertsPage
+from pages.alerts_page import AlertsPage
 
 
 @pytest.mark.asyncio

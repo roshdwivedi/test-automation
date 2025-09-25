@@ -42,12 +42,16 @@ jobs:
         python -m playwright install --with-deps ${{ matrix.browser }}
         
     - name: Run smoke tests
+      env:
+        PYTHONPATH: .
       run: |
-        pytest tests/ -m smoke -v --tb=short --browser-type=${{ matrix.browser }}
+        python -m pytest tests/ -m smoke -v --tb=short --browser-type=${{ matrix.browser }}
         
     - name: Run all tests
+      env:
+        PYTHONPATH: .
       run: |
-        pytest tests/ -v --tb=short --html=reports/report.html --self-contained-html --junit-xml=reports/junit.xml --browser-type=${{ matrix.browser }}
+        python -m pytest tests/ -v --tb=short --html=reports/report.html --self-contained-html --junit-xml=reports/junit.xml --browser-type=${{ matrix.browser }}
         
     - name: Upload test results
       uses: actions/upload-artifact@v4

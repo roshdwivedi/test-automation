@@ -7,7 +7,7 @@ This module contains tests for file upload functionality.
 import pytest
 import os
 from playwright.async_api import Page
-from ..pages.elements_page import FileUploadPage
+from pages.elements_page import FileUploadPage
 
 
 @pytest.mark.asyncio

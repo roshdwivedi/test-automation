@@ -1,1 +1,1 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="0" time="0.137" timestamp="2025-09-25T13:23:48.351989" hostname="Rosh" /></testsuites>
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="8.628" timestamp="2025-09-25T13:50:22.166671" hostname="Rosh"><testcase classname="tests.test_authentication.TestAuthentication" name="test_valid_login" time="6.206" /></testsuite></testsuites>
