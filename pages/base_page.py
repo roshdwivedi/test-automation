@@ -2,7 +2,7 @@
 Base page class containing common functionality for all page objects.
 """
 
-from playwright.async_api import Page, Locator
+from playwright.async_api import Page, Locator, TimeoutError
 from typing import Optional, Union
 
 
@@ -82,20 +82,27 @@ class BasePage:
         element = await self.wait_for_element(selector)
         return await element.text_content() or ""
     
-    async def is_element_visible(self, selector: str) -> bool:
+    async def is_element_visible(self, selector: str, timeout_ms: int = 5000) -> bool:
         """
-        Check if an element is visible.
+        Check if an element is visible, explicitly waiting for it to appear.
         
         Args:
             selector: CSS selector or XPath
+            timeout_ms: Timeout in milliseconds to wait for visibility (Default 5000ms)
             
         Returns:
-            bool: True if visible, False otherwise
+            bool: True if visible within the timeout, False otherwise
         """
+        locator = self.page.locator(selector)
         try:
-            locator = self.page.locator(selector)
-            return await locator.is_visible()
+            # Use wait_for to explicitly wait for the element to become visible
+            await locator.wait_for(state="visible", timeout=timeout_ms)
+            return True
+        except TimeoutError:
+            # If Playwright throws a TimeoutError, the element is not visible
+            return False
         except Exception:
+            # Catch any other exception during lookup
             return False
     
     async def is_element_enabled(self, selector: str) -> bool:
