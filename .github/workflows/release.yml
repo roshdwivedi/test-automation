@@ -32,7 +32,7 @@ jobs:
         pytest tests/ -v --tb=short --html=reports/release-report.html --self-contained-html --junit-xml=reports/release-junit.xml
         
     - name: Upload release test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: release-test-results
         path: reports/

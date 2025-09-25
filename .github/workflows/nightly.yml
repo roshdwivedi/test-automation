@@ -52,7 +52,7 @@ jobs:
         pytest tests/ --cov=pages --cov-report=html:reports/coverage --cov-report=xml:reports/coverage.xml
         
     - name: Upload nightly test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: nightly-test-results

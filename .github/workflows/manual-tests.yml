@@ -153,7 +153,7 @@ jobs:
         fi
         
     - name: Upload manual test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: manual-test-results-${{ inputs.test_category }}-${{ inputs.browser }}-py${{ inputs.python_version }}
