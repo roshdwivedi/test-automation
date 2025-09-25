@@ -309,7 +309,7 @@ This project includes comprehensive GitHub Actions workflows for automated testi
 ```bash
 # Create a new repository on GitHub
 # Clone your repository
-git clone https://github.com/your-username/your-repo.git
+git clone https://github.com/roshdwivedi/test-automation
 cd your-repo
 
 # Copy your project files
@@ -519,32 +519,3 @@ playwright doctor
 # Reinstall dependencies
 pip install -r requirements.txt
 ```
-
-#### Test Failures Due to Timeouts
-- Increase timeout values in `conftest.py`
-- Check network connectivity
-- Verify application availability
-
-#### Permission Errors on Windows
-- Run PowerShell as Administrator
-- Set execution policy: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
-
-## Contributing
-
-1. Follow the existing code structure and naming conventions
-2. Add appropriate test markers for new tests
-3. Update documentation for new features
-4. Ensure all tests pass before submitting changes
-5. Use descriptive commit messages
-
-## Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review pytest and Playwright documentation
-3. Search existing issues in the project repository
-4. Create detailed bug reports with logs and screenshots
-
-## License
-
-This project is licensed under the MIT License. See LICENSE file for details.
