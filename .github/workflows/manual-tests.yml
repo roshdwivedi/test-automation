@@ -89,7 +89,7 @@ jobs:
       run: |
         for browser in chromium firefox webkit; do
           echo "Running all tests with $browser"
-          pytest tests/ -v --tb=short --browser=$browser \
+          pytest tests/ -v --tb=short --browser-type=$browser \
             --html=reports/manual-all-$browser-report.html \
             --self-contained-html \
             --junit-xml=reports/manual-all-$browser-junit.xml
@@ -101,15 +101,15 @@ jobs:
         for browser in chromium firefox webkit; do
           echo "Running ${{ inputs.test_category }} tests with $browser"
           if [ "${{ inputs.test_category }}" == "auth" ]; then
-            pytest tests/test_authentication.py -v --tb=short --browser=$browser
+            pytest tests/test_authentication.py -v --tb=short --browser-type=$browser
           elif [ "${{ inputs.test_category }}" == "elements" ]; then
-            pytest tests/test_elements.py -v --tb=short --browser=$browser
+            pytest tests/test_elements.py -v --tb=short --browser-type=$browser
           elif [ "${{ inputs.test_category }}" == "alerts" ]; then
-            pytest tests/test_alerts.py -v --tb=short --browser=$browser
+            pytest tests/test_alerts.py -v --tb=short --browser-type=$browser
           elif [ "${{ inputs.test_category }}" == "forms" ]; then
-            pytest tests/test_file_upload.py -v --tb=short --browser=$browser
+            pytest tests/test_file_upload.py -v --tb=short --browser-type=$browser
           else
-            pytest tests/ -m ${{ inputs.test_category }} -v --tb=short --browser=$browser
+            pytest tests/ -m ${{ inputs.test_category }} -v --tb=short --browser-type=$browser
           fi
         done
         
@@ -117,7 +117,7 @@ jobs:
       if: inputs.test_category == 'all' && inputs.browser != 'all'
       run: |
         echo "Running all tests with ${{ inputs.browser }}"
-        pytest tests/ -v --tb=short --browser=${{ inputs.browser }} \
+        pytest tests/ -v --tb=short --browser-type=${{ inputs.browser }} \
           --html=reports/manual-all-${{ inputs.browser }}-report.html \
           --self-contained-html \
           --junit-xml=reports/manual-all-${{ inputs.browser }}-junit.xml
@@ -127,27 +127,27 @@ jobs:
       run: |
         echo "Running ${{ inputs.test_category }} tests with ${{ inputs.browser }}"
         if [ "${{ inputs.test_category }}" == "auth" ]; then
-          pytest tests/test_authentication.py -v --tb=short --browser=${{ inputs.browser }} \
+          pytest tests/test_authentication.py -v --tb=short --browser-type=${{ inputs.browser }} \
             --html=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-report.html \
             --self-contained-html \
             --junit-xml=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-junit.xml
         elif [ "${{ inputs.test_category }}" == "elements" ]; then
-          pytest tests/test_elements.py -v --tb=short --browser=${{ inputs.browser }} \
+          pytest tests/test_elements.py -v --tb=short --browser-type=${{ inputs.browser }} \
             --html=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-report.html \
             --self-contained-html \
             --junit-xml=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-junit.xml
         elif [ "${{ inputs.test_category }}" == "alerts" ]; then
-          pytest tests/test_alerts.py -v --tb=short --browser=${{ inputs.browser }} \
+          pytest tests/test_alerts.py -v --tb=short --browser-type=${{ inputs.browser }} \
             --html=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-report.html \
             --self-contained-html \
             --junit-xml=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-junit.xml
         elif [ "${{ inputs.test_category }}" == "forms" ]; then
-          pytest tests/test_file_upload.py -v --tb=short --browser=${{ inputs.browser }} \
+          pytest tests/test_file_upload.py -v --tb=short --browser-type=${{ inputs.browser }} \
             --html=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-report.html \
             --self-contained-html \
             --junit-xml=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-junit.xml
         else
-          pytest tests/ -m ${{ inputs.test_category }} -v --tb=short --browser=${{ inputs.browser }} \
+          pytest tests/ -m ${{ inputs.test_category }} -v --tb=short --browser-type=${{ inputs.browser }} \
             --html=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-report.html \
             --self-contained-html \
             --junit-xml=reports/manual-${{ inputs.test_category }}-${{ inputs.browser }}-junit.xml
