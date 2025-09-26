@@ -1,132 +1,91 @@
-# Web Automation Test Suite
+# Test Automation
 
-Playwright + pytest end‑to‑end tests with async support, clean Page Objects, cross‑browser runs, rich reports, and CI out of the box.
+A straightforward test automation setup using Playwright and pytest. No frills, just reliable end-to-end testing that works across browsers.
 
-- Stack: Python 3.8+, Playwright, pytest, pytest-asyncio, pytest-html
-- Browsers: Chromium, Firefox, WebKit
-- Reports: HTML, JUnit XML (for CI), optional JSON and coverage
+## What's in the box
 
----
+- **Stack**: Python 3.8+, Playwright, pytest with async support
+- **Browsers**: Chromium, Firefox, WebKit - pick your poison
+- **Reports**: HTML reports for humans, JUnit XML for CI
+- **Structure**: Clean Page Objects pattern, organized test files
 
 ## Quick start
 
-1) Create and activate a virtual env
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
+Create a virtual environment and get everything installed:
 
-2) Install dependencies and browsers
-```powershell
+```bash
+python -m venv venv
+.\venv\Scripts\Activate.ps1  # Windows
+# source venv/bin/activate   # Mac/Linux
+
 pip install -r requirements.txt
 python -m playwright install --with-deps
 ```
 
-3) Run tests
-```powershell
-# All tests (default browser from workflow/fixtures)
+## Running tests
+
+Basic test runs:
+```bash
+# Run everything
 pytest tests/ -v --tb=short --browser-type=chromium
 
-# Quick smoke
-pytest tests/ -m smoke -v --tb=short --browser-type=chromium
+# Just the smoke tests
+pytest tests/ -m smoke -v
 
-# By marker
+# Authentication tests only
 pytest tests/ -m auth -v
-pytest tests/ -m regression -v
 
-# Specific test/class
+# Specific test
 pytest tests/test_authentication.py::TestAuthentication::test_valid_login -v
 ```
 
-4) See reports
-- HTML: reports/report.html
-- JUnit: reports/junit.xml
-
-Tip: Parallel runs with xdist
-```powershell
+Want it faster? Run tests in parallel:
+```bash
 pytest tests/ -v -n auto
 ```
 
----
+## What you get
 
-## Project layout (essentials)
+After running tests, check out:
+- **HTML report**: `reports/report.html` - nice visual overview
+- **JUnit XML**: `reports/junit.xml` - for your CI pipeline
+
+## Project layout
+
 ```
 web_automation_tests/
-├─ pages/           # Page Objects (base_page.py, alerts_page.py, elements_page.py, login_page.py)
-├─ tests/           # Tests (authentication, elements, alerts, upload)
-├─ reports/         # HTML + JUnit outputs
-├─ conftest.py      # Playwright fixtures (browser/page) and options
-├─ pytest.ini       # Markers, addopts, timeouts, PYTHONPATH
-└─ .github/workflows/  # CI pipelines
+├─ pages/           # Page Objects go here
+├─ tests/           # Your actual tests
+├─ reports/         # Generated reports
+├─ conftest.py      # Playwright setup and fixtures
+└─ pytest.ini      # Test configuration
 ```
 
-Notes
-- Imports in tests use absolute paths (e.g., `from pages.alerts_page import AlertsPage`).
-- Custom CLI option: `--browser-type` (chromium | firefox | webkit) from conftest fixtures.
+## Test markers
 
----
+Use these to run specific test groups:
+- `smoke` - quick sanity checks
+- `regression` - full test suite
+- `auth` - authentication tests
+- `elements` - UI element tests
+- `alerts` - alert handling tests
 
-## Useful commands
-```powershell
-# Headless
-pytest tests/ -v --browser-type=chromium --browser-args="--headless=new"
+## CI ready
 
-# Coverage
-pytest tests/ -v --cov=pages --cov-report=term --cov-report=html:reports/coverage
+GitHub Actions workflow included. Runs tests across Python versions 3.8-3.11 and all three browsers. Reports get uploaded as artifacts.
 
-# JSON report (optional)
-pytest tests/ --json-report --json-report-file=reports/report.json
-```
+## Tips
 
----
-
-## CI (GitHub Actions)
-- CI runs matrix: Python [3.8–3.11] × Browsers [chromium, firefox, webkit]
-- Artifacts uploaded: reports/ (HTML, JUnit)
-- Unit test results published via EnricoMi/publish-unit-test-result-action
-- Safe for forks: the workflow creates a Check Run only for trusted events and falls back to job summary on forked PRs
-
-Key bits in .github/workflows/ci.yml:
-- checks: write permissions on the publish job (for non‑fork contexts)
-- Conditional steps:
-  - Non‑fork PRs/pushes → `check_run: true`
-  - Forked PRs → `check_run: false` and `job_summary: true`
-
-No extra setup is required if you use the provided workflow files. If you enable “Restrict forking” scenarios, ensure repo “Workflow permissions” are set to “Read and write” for first‑party check runs.
-
----
+- Tests use absolute imports (`from pages.login_page import LoginPage`)
+- Page Objects keep your tests clean and maintainable
+- Use explicit waits, avoid sleeps
+- Clean up artifacts regularly: `.pytest_cache/`, `__pycache__/`, `reports/`
 
 ## Troubleshooting
 
-- ImportError: attempted relative import beyond top‑level package
-  - Use absolute imports in tests: `from pages.alerts_page import AlertsPage`
-  - `pytest.ini` already sets `pythonpath = .`
+**Import errors?** Make sure you're using absolute imports in your tests.
 
-- Playwright browser errors / timeouts
-  - Install browsers: `python -m playwright install --with-deps`
-  - Verify: `python -m playwright doctor`
+**Browser issues?** Run `python -m playwright install --with-deps` and `python -m playwright doctor`.
 
-- GitHub action 403 “Resource not accessible by integration” (check runs)
-  - First‑party PRs/pushes: publish job has `checks: write` and will create a Check Run
-  - Forked PRs: workflow auto‑disables check runs and posts only to the job summary
+**CI permissions?** The workflow handles fork-safe check runs automatically.
 
----
-
-## Markers (categories)
-- smoke, regression, slow, auth, elements, forms, alerts
-```powershell
-pytest -m smoke -v
-pytest -m "auth and not slow" -v
-```
-
----
-
-## Contributing / maintenance
-- Keep tests independent and explicit (Arrange‑Act‑Assert)
-- Encapsulate UI interactions in Page Objects
-- Prefer explicit waits over sleeps
-- Regularly clean artifacts: `.pytest_cache/`, `__pycache__/`, `reports/`
-
----
-
-Happy testing! 🚀
